@@ -10,7 +10,7 @@ public class App {
         int aktualisJatekos = 1;
 
         // Eredmény: 0 = még nincs vége, 1 = játékos 1 nyert, 2 = játékos 2 nyert, 3 = döntetlen
-        int eredmeny = 0;
+        int eredmeny;
 
         // Lépések számlálója (max 9 lépés lehetséges egy 3x3-as táblán)
         int lepesSzam = 0;
