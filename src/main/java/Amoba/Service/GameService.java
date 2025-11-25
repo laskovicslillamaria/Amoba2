@@ -1,5 +1,4 @@
 package Amoba.Service;
-
 import Amoba.Board;
 import java.util.Random;
 
@@ -26,18 +25,64 @@ public class GameService {
         return 0; // nincs nyertes
     }
 
-    // Egyszerű véletlen AI – random üres helyre lép
+    // Ai lép
     public void aiLep(Board board) {
-        Random rand = new Random();
-        int sor, oszlop;
-        do {
-            sor = rand.nextInt(5);
-            oszlop = rand.nextInt(5);
-        } while (!board.ures(sor, oszlop));
+        // 1) AI megnézi, hogy tud-e nyerni közvetlenül
+        for (int sor = 0; sor < 5; sor++) {
+            for (int oszlop = 0; oszlop < 5; oszlop++) {
+                if (board.getTabla()[sor][oszlop] == 0) {
+                    board.getTabla()[sor][oszlop] = 2;
+                    if (nyertesVizsgalat(board) == 2) {
+                        board.getTabla()[sor][oszlop] = 0;
+                        board.lep(sor, oszlop, 2);
+                        System.out.println("AI (O) lépett a következő mezőre: [" + sor + "," + oszlop + "]");
+                        return;
+                    }
+                    board.getTabla()[sor][oszlop] = 0;
+                }
+            }
+        }
 
-        board.lep(sor, oszlop, 2);
-        System.out.println("A gép (O) a következő helyre lépett: [" + sor + "," + oszlop + "]");
+        // 2) AI blokkolja a játékost
+        for (int sor = 0; sor < 5; sor++) {
+            for (int oszlop = 0; oszlop < 5; oszlop++) {
+                if (board.getTabla()[sor][oszlop] == 0) {
+                    board.getTabla()[sor][oszlop] = 1;
+                    if (nyertesVizsgalat(board) == 1) {
+                        board.getTabla()[sor][oszlop] = 0;
+                        board.lep(sor, oszlop, 2);
+                        System.out.println("AI (O) lépett a következő mezőre: [" + sor + "," + oszlop + "]");
+                        return;
+                    }
+                    board.getTabla()[sor][oszlop] = 0;
+                }
+            }
+        }
+        // 3) különben random lép
+        superRandom(board);
     }
+
+    private void superRandom(Board board) {
+        Random rnd = new Random();
+        while (true) {
+            int sor = rnd.nextInt(5);
+            int oszlop = rnd.nextInt(5);
+            if (board.lep(sor, oszlop, 2)) {
+                System.out.println("AI (O) lépett a következő mezőre: [" + sor + "," + oszlop + "]");
+                return;
+            }
+        }
+    }
+//        Random rand = new Random();
+//        int sor, oszlop;
+//        do {
+//            sor = rand.nextInt(5);
+//            oszlop = rand.nextInt(5);
+//        } while (!board.ures(sor, oszlop));
+
+//        board.lep(sor, oszlop, 2);
+//        System.out.println("A gép (O) a következő helyre lépett: [" + sor + "," + oszlop + "]");
+
 
     // Következő játékos meghatározása
     public int kovetkezoJatekos(int aktualis) {
@@ -45,11 +90,11 @@ public class GameService {
     }
 
     // Győztes kiírása
-    public void nyertesKiiras(int eredmeny) {
+    public void nyertesKiiras(int eredmeny, String playername) {
         if (eredmeny == 1)
-            System.out.println("Az 1-es (X) játékos győzött!");
+            System.out.println(playername + " (X) győzött!");
         else if (eredmeny == 2)
-            System.out.println("A gép (O) győzött!");
+            System.out.println("Az Ai (O) győzött!");
         else
             System.out.println("Döntetlen!");
     }
