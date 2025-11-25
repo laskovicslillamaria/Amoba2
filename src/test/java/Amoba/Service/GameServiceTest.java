@@ -13,7 +13,7 @@ public class GameServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new GameService();
+        service = new GameService("Tesztjátékos");
         board = new Board();
     }
 

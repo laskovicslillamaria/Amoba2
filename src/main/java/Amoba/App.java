@@ -7,11 +7,11 @@ public class App {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         Board board = new Board();
-        GameService service = new GameService();
 
         // Név bekérés
         System.out.println("Add meg a nevedet: ");
         String playername = sc.nextLine();
+        GameService service = new GameService(playername);
 
         int aktualisJatekos = 1; // mindig az ember kezd
         int eredmeny = 0;
@@ -50,5 +50,8 @@ public class App {
 
         board.kirajzol();
         service.nyertesKiiras(eredmeny, playername);
+
+        service.statMentes(eredmeny, playername);
+        service.statKiolvasas();
     }
 }

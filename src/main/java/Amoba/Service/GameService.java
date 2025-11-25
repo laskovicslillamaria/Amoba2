@@ -1,8 +1,17 @@
 package Amoba.Service;
 import Amoba.Board;
 import java.util.Random;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class GameService {
+    private String playername;
+    public GameService(String playername) {
+        this.playername = playername;
+    }
 
     // Ellenőrzi, hogy van-e győztes
     public int nyertesVizsgalat(Board board) {
@@ -98,4 +107,71 @@ public class GameService {
         else
             System.out.println("Döntetlen!");
     }
+
+//    public static void saveStats(String playerName, String result) {
+//        try {
+//            FileWriter fw = new FileWriter("stats.txt", true);
+//            fw.write(playerName + " - " + result + "\n");
+//            fw.close();
+//        } catch (IOException e) {
+//            System.out.println("Hiba történt a statisztika mentésekor.");
+//        }
+//    }
+
+    public void statMentes(int eredmeny, String playername) {
+        try (FileWriter fw = new FileWriter("scores.txt", true)) {
+            if (eredmeny == 1) {
+                fw.write(playername + " nyert\n");
+            } else if (eredmeny == 2) {
+                fw.write("AI nyert\n");
+            } else {
+                fw.write("Döntetlen\n");
+            }
+        } catch (IOException e) {
+            System.out.println("Hiba a statisztika mentésekor!");
+        }
+    }
+    public void statKiolvasas() {
+        System.out.println("=== STATISZTIKA ===");
+
+        int playerWins = 0;
+        int aiWins = 0;
+        int draws = 0;
+
+        try {
+            List<String> sorok = Files.readAllLines(Paths.get("scores.txt"));
+
+            for (String s : sorok) {
+                if (s.startsWith("AI")) {
+                    aiWins++;
+                } else if (s.startsWith("Döntetlen")) {
+                    draws++;
+                } else {
+                    // minden más emberi játékos
+                    playerWins++;
+                }
+            }
+
+            System.out.println(playername + " : " + playerWins + " győzelem");
+            System.out.println("AI : " + aiWins + " győzelem");
+            System.out.println("Döntetlen : " + draws);
+
+        } catch (IOException e) {
+            System.out.println("Még nincs statisztika.");
+        }
+
+        System.out.println("====================");
+    }
+//    public void statKiolas() {
+//        System.out.println("=== STATISZTIKA ===");
+//        try {
+//            List<String> sorok = Files.readAllLines(Paths.get("scores.txt"));
+//            for (String s : sorok) {
+//                System.out.println(s);
+//            }
+//        } catch (IOException e) {
+//            System.out.println("Még nincs statisztika.");
+//        }
+//        System.out.println("====================");
+//    }
 }
