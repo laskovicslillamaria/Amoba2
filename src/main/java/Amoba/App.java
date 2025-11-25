@@ -9,6 +9,10 @@ public class App {
         Board board = new Board();
         GameService service = new GameService();
 
+        // Név bekérés
+        System.out.println("Add meg a nevedet: ");
+        String playername = sc.nextLine();
+
         int aktualisJatekos = 1; // mindig az ember kezd
         int eredmeny = 0;
         int lepesSzam = 0;
@@ -21,7 +25,7 @@ public class App {
 
             if (aktualisJatekos == 1) {
                 // Ember lép
-                System.out.println("Te következel (X).");
+                System.out.println(playername + " következik (X).");
                 int sor, oszlop;
                 while (true) {
                     System.out.print("Add meg a sort (0-4): ");
@@ -33,6 +37,7 @@ public class App {
                 }
             } else {
                 // AI lép
+                System.out.println("Ai következik (O).");
                 service.aiLep(board);
             }
 
@@ -44,6 +49,6 @@ public class App {
         }
 
         board.kirajzol();
-        service.nyertesKiiras(eredmeny);
+        service.nyertesKiiras(eredmeny, playername);
     }
 }
