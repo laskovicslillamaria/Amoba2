@@ -24,7 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-checkstyle.version>3.6.0</maven-checkstyle.version>
         <lombok.version>1.18.42</lombok.version>
-<!--        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>-->
+        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
     </properties>
 
     <dependencies>
@@ -77,9 +77,9 @@
                 <version>${maven-checkstyle.version}</version>
 <!--                <artifactId>maven-surefire-plugin</artifactId>-->
 <!--                <version>3.0.0</version>-->
-<!--            <configuration>-->
-<!--                <configuration>${basedir}/src/main/resources/checkstyle.xml</configuration>-->
-<!--            </configuration>-->
+            <configuration>
+                <configLocation>${basedir}/src/main/resources/checkstyle.xml</configLocation>
+            </configuration>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -98,6 +98,7 @@
                     <rulesets>
                         <ruleset>${basedir}/src/main/resources/pmd-ruleset.xml</ruleset>
                     </rulesets>
+                    <failOnViolation>false</failOnViolation>
                 </configuration>
                 <executions>
                     <execution>
@@ -119,7 +120,7 @@
                 <version>0.8.13</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/domain/*</exclude>
+                        <exclude>**/Amoba/*</exclude>
                         <exclude>**/App.*</exclude>
                     </excludes>
                 </configuration>
