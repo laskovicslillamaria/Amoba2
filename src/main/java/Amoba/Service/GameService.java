@@ -1,5 +1,10 @@
 package Amoba.Service;
 import Amoba.Board;
+import Amoba.Model.GameState;
+import lombok.Setter;
+
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Random;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,6 +12,7 @@ import java.util.List;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+@Setter
 public class GameService {
     private String playername;
     public GameService(String playername) {
@@ -15,7 +21,7 @@ public class GameService {
 
     // Ellenőrzi, hogy van-e győztes
     public int nyertesVizsgalat(Board board) {
-        int[][] t = board.getTabla();
+        final int[][] t = board.getTabla();
 
         // Sorok és oszlopok
         for (int i = 0; i < 5; i++) {
@@ -72,26 +78,16 @@ public class GameService {
     }
 
     private void superRandom(Board board) {
-        Random rnd = new Random();
+        final Random rnd = new Random();
         while (true) {
-            int sor = rnd.nextInt(5);
-            int oszlop = rnd.nextInt(5);
+           final int sor = rnd.nextInt(5);
+           final int oszlop = rnd.nextInt(5);
             if (board.lep(sor, oszlop, 2)) {
                 System.out.println("AI (O) lépett a következő mezőre: [" + sor + "," + oszlop + "]");
                 return;
             }
         }
     }
-//        Random rand = new Random();
-//        int sor, oszlop;
-//        do {
-//            sor = rand.nextInt(5);
-//            oszlop = rand.nextInt(5);
-//        } while (!board.ures(sor, oszlop));
-
-//        board.lep(sor, oszlop, 2);
-//        System.out.println("A gép (O) a következő helyre lépett: [" + sor + "," + oszlop + "]");
-
 
     // Következő játékos meghatározása
     public int kovetkezoJatekos(int aktualis) {
@@ -107,16 +103,69 @@ public class GameService {
         else
             System.out.println("Döntetlen!");
     }
+    public boolean jatekMenteseTxt(GameState state, String filename) {
+       final List<String> lines = new ArrayList<>();
+        // 1. sor: játékos neve
+        lines.add(state.getPlayername() == null ? "" : state.getPlayername());
+        //2.sor: aktuális játékos
+        lines. add(String.valueOf(state.getAktualisJatekos()));
+        //3.sor: Lépésszam
+        lines.add(String.valueOf(state.getLepesSzam()));
 
-//    public static void saveStats(String playerName, String result) {
-//        try {
-//            FileWriter fw = new FileWriter("stats.txt", true);
-//            fw.write(playerName + " - " + result + "\n");
-//            fw.close();
-//        } catch (IOException e) {
-//            System.out.println("Hiba történt a statisztika mentésekor.");
-//        }
-//    }
+       final int [][] tabla = state.getTabla();
+        for (int[] ints : tabla) {
+            final StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < ints.length; j++) {
+                if (j > 0) sb.append(",");
+                sb.append(ints[j]);
+            }
+            lines.add(sb.toString());
+        }
+        try {
+            Files.write(Path.of(filename), lines);
+            System.out.println("Játék mentve: " + filename);
+            return true;
+        } catch (IOException e) {
+            System.out.println("Hiba a játék mentésekor: " + e.getMessage());
+            return false;
+        }
+    }
+    public GameState jatekBetolteseTxt(String filename) {
+       final Path p = Path.of(filename);
+        if (!Files.exists(p)) {
+            System.out.println("Nincs mentett játék: " + filename);
+            return null;
+        }
+        try {
+           final List<String> lines = Files.readAllLines(p);
+            if (lines.size() < 8) {
+                System.out.println("Érvénytelen mentés (túl rövid): " + filename);
+                return null;
+            }
+           final String playername = lines.get(0);
+           final int aktualisJatekos = Integer.parseInt(lines.get(1).trim());
+           final int lepesszam = Integer.parseInt(lines.get(2).trim());
+           final int [][] tabla = new int [5][5];
+            for (int i = 0; i < 5; i++) {
+               final String row = lines.get(3 + i).trim();
+                final String[] parts = row.split(",");
+                if (parts.length != 5) {
+                    System.out.println("Érvénytelen táblasor a mentésben: " + row);
+                    return null;
+                }
+                for (int j = 0; j < 5; j++) {
+                    tabla[i][j] = Integer.parseInt(parts[j].trim());
+                }
+            }
+            return new GameState(tabla, aktualisJatekos, playername, lepesszam);
+        } catch (IOException e) {
+            System.out.println("Hiba a fájl olvasásakor: " + e.getMessage());
+            return null;
+        } catch (NumberFormatException e) {
+            System.out.println("Hibás számformátum a mentésfájlban: " + e.getMessage());
+            return null;
+        }
+    }
 
     public void statMentes(int eredmeny, String playername) {
         try (FileWriter fw = new FileWriter("scores.txt", true)) {
@@ -139,7 +188,7 @@ public class GameService {
         int draws = 0;
 
         try {
-            List<String> sorok = Files.readAllLines(Paths.get("scores.txt"));
+        final  List<String> sorok = Files.readAllLines(Paths.get("scores.txt"));
 
             for (String s : sorok) {
                 if (s.startsWith("AI")) {
@@ -162,16 +211,8 @@ public class GameService {
 
         System.out.println("====================");
     }
-//    public void statKiolas() {
-//        System.out.println("=== STATISZTIKA ===");
-//        try {
-//            List<String> sorok = Files.readAllLines(Paths.get("scores.txt"));
-//            for (String s : sorok) {
-//                System.out.println(s);
-//            }
-//        } catch (IOException e) {
-//            System.out.println("Még nincs statisztika.");
-//        }
-//        System.out.println("====================");
-//    }
+
+    public String getPlayername() {
+        return playername;
+    }
 }
