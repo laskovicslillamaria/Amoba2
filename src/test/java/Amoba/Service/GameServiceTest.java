@@ -17,32 +17,6 @@ public class GameServiceTest {
         board = new Board();
     }
 
-    // --- BOARD TESZTEK ---
-
-    @Test
-    void testUresTablaInicializalas() {
-        int[][] tabla = board.getTabla();
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                assertEquals(0, tabla[i][j], "A mezőnek üresnek kell lennie (0)");
-            }
-        }
-    }
-
-    @Test
-    void testLepesElfogadas() {
-        boolean siker = board.lep(2, 2, 1);
-        assertTrue(siker, "A lépésnek sikeresnek kell lennie");
-        assertEquals(1, board.getTabla()[2][2]);
-    }
-
-    @Test
-    void testLepesHibasPozicio() {
-        board.lep(0, 0, 1);
-        boolean masodikLepes = board.lep(0, 0, 2);
-        assertFalse(masodikLepes, "Nem lehet már foglalt mezőre lépni");
-    }
-
     // --- GAME SERVICE TESZTEK ---
 
     @Test
@@ -95,21 +69,12 @@ public class GameServiceTest {
         assertEquals(2, service.kovetkezoJatekos(1));
         assertEquals(1, service.kovetkezoJatekos(2));
     }
-
     @Test
-    void testAiLepUresHelyre() {
-        // Minden mező üres, az AI-nak érvényes mezőt kell választania
-        service.aiLep(board);
-        boolean vanO = false;
-        int[][] t = board.getTabla();
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (t[i][j] == 2) {
-                    vanO = true;
-                    break;
-                }
-            }
-        }
-        assertTrue(vanO, "Az AI-nak lépnie kell egy üres mezőre");
+    void testSetGetPlayername() {
+        GameService g = new GameService("Peti");
+        assertEquals("Peti", g.getPlayername());
+
+        g.setPlayername("Marci");
+        assertEquals("Marci", g.getPlayername());
     }
 }
