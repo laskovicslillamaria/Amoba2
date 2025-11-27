@@ -1,11 +1,12 @@
 package Amoba;
 
-public class Board {
-    private final int[][] tabla = new int[5][5];
+import lombok.Getter;
+import lombok.Setter;
 
-    public int[][] getTabla() {
-        return tabla;
-    }
+@Setter
+@Getter
+public class Board {
+    private int[][] tabla = new int[5][5];
 
     // Tábla kirajzolása
     public void kirajzol() {
@@ -13,7 +14,7 @@ public class Board {
         for (int i = 0; i < 5; i++) {
             System.out.print("|");
             for (int j = 0; j < 5; j++) {
-                int ertek = tabla[i][j];
+                final int ertek = tabla[i][j];
                 if (ertek == 0)
                     System.out.print(" |");
                 else if (ertek == 1)
@@ -25,7 +26,10 @@ public class Board {
             System.out.println("+-+-+-+-+-+");
         }
     }
-
+    // Ellenőrzi, hogy egy mező üres-e
+    public boolean ures(int sor, int oszlop) {
+        return tabla[sor][oszlop] == 0;
+    }
     // Érvényes lépés beállítása, ha üres a mező
     public boolean lep(int sor, int oszlop, int jatekos) {
         if (sor < 0 || sor >= 5 || oszlop < 0 || oszlop >= 5 || tabla[sor][oszlop] != 0) {
@@ -35,8 +39,5 @@ public class Board {
         return true;
     }
 
-    // Ellenőrzi, hogy egy mező üres-e
-    public boolean ures(int sor, int oszlop) {
-        return tabla[sor][oszlop] == 0;
-    }
+
 }
