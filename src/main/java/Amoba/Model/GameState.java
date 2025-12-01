@@ -1,10 +1,12 @@
 package Amoba.Model;
 
-public class GameState {
-    private int[][] tabla;
-    private int aktualisJatekos;
-    private String playername;
-    private int lepesSzam;
+import java.io.Serializable;
+
+public class GameState implements Serializable {
+    private final int[][] tabla;
+    private final int aktualisJatekos;
+    private final String playername;
+    private final int lepesSzam;
 
     public GameState(int[][] tabla, int aktualisJatekos, String playername, int lepesSzam) {
         this.tabla = tabla;
