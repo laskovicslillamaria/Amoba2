@@ -1,11 +1,38 @@
 package Amoba.Service;
 
 import Amoba.Board;
+import Amoba.Model.GameState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+
+@ExtendWith(MockitoExtension.class)
+class NyertesVizsgalatTest {
+
+    @Mock
+    Board board;
+    GameService service = new GameService("Teszt");
+    @Test
+    void tesztSorGyőztes() {
+        int[][] tabla = {
+                {1,1,1,1,1},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0},
+                {0,0,0,0,0}
+        };
+
+        when(board.getTabla()).thenReturn(tabla);
+
+        assertEquals(1, service.nyertesVizsgalat(board));
+    }
+}
 public class GameServiceTest {
 
     private GameService service;
@@ -18,6 +45,7 @@ public class GameServiceTest {
     }
 
     // --- GAME SERVICE TESZTEK ---
+
 
     @Test
     void testNyeresSorban() {
