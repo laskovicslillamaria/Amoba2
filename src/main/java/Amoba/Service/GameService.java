@@ -2,6 +2,8 @@ package Amoba.Service;
 import Amoba.Board;
 import Amoba.Model.GameState;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,9 +15,11 @@ import java.nio.file.Paths;
 
 @Setter
 public class GameService {
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
     private String playername;
     public GameService(String playername) {
         this.playername = playername;
+        log.info("GameService létrehozva, játékos = {}", playername);
     }
 
     // Ellenőrzi, hogy van-e győztes
@@ -47,13 +51,17 @@ public class GameService {
     // Győztes kiírása
     public void nyertesKiiras(int eredmeny, String playername) {
         if (eredmeny == 1)
-            System.out.println(playername + " (X) győzött!");
+            log.info("{} (X) győzött!", playername);
+//            System.out.println(playername + " (X) győzött!");
         else if (eredmeny == 2)
-            System.out.println("Az Ai (O) győzött!");
+            log.info("AI (O) győzött!");
+//            System.out.println("Az Ai (O) győzött!");
         else
-            System.out.println("Döntetlen!");
+            log.info("Döntetlen!");
+//            System.out.println("Döntetlen!");
     }
     public boolean jatekMenteseTxt(GameState state, String filename) {
+        log.info("Játék mentése indul: {}", filename);
        final List<String> lines = new ArrayList<>();
         // 1. sor: játékos neve
         lines.add(state.getPlayername() == null ? "" : state.getPlayername());
@@ -73,23 +81,28 @@ public class GameService {
         }
         try {
             Files.write(Path.of(filename), lines);
-            System.out.println("Játék mentve: " + filename);
+            log.info("Játék sikeresen mentve");
+//            System.out.println("Játék mentve: " + filename);
             return true;
         } catch (IOException e) {
-            System.out.println("Hiba a játék mentésekor: " + e.getMessage());
+            log.error("Hiba a mentéskor: {}", e.getMessage());
+//            System.out.println("Hiba a játék mentésekor: " + e.getMessage());
             return false;
         }
     }
     public GameState jatekBetolteseTxt(String filename) {
+        log.info("Játék betöltése: {}", filename);
        final Path p = Path.of(filename);
         if (!Files.exists(p)) {
-            System.out.println("Nincs mentett játék: " + filename);
+            log.warn("Nincs mentett játék");
+//            System.out.println("Nincs mentett játék: " + filename);
             return null;
         }
         try {
            final List<String> lines = Files.readAllLines(p);
             if (lines.size() < 8) {
-                System.out.println("Érvénytelen mentés (túl rövid): " + filename);
+                log.error("Érvénytelen mentés: túl kevés sor");
+//                System.out.println("Érvénytelen mentés (túl rövid): " + filename);
                 return null;
             }
            final String playername = lines.get(0);
@@ -104,10 +117,12 @@ public class GameService {
             }
             return new GameState(tabla, aktualisJatekos, playername, lepesszam);
         } catch (IOException e) {
-            System.out.println("Hiba a fájl olvasásakor: " + e.getMessage());
+            log.error("Hiba a fájl olvasásakor: {}", e.getMessage());
+           // System.out.println("Hiba a fájl olvasásakor: " + e.getMessage());
             return null;
         } catch (NumberFormatException e) {
-            System.out.println("Hibás számformátum a mentésfájlban: " + e.getMessage());
+            log.error("Hibás számformátum a mentésfájlban: {}", e.getMessage());
+//            System.out.println("Hibás számformátum a mentésfájlban: " + e.getMessage());
             return null;
         }
     }
@@ -122,11 +137,13 @@ public class GameService {
                 fw.write("Döntetlen\n");
             }
         } catch (IOException e) {
-            System.out.println("Hiba a statisztika mentésekor!");
+            log.error("Hiba statisztika mentésekor: {}", e.getMessage());
+//            System.out.println("Hiba a statisztika mentésekor!");
         }
     }
     public void statKiolvasas() {
-        System.out.println("=== STATISZTIKA ===");
+        log.info("=== STATISZTIKA ===");
+//        System.out.println("=== STATISZTIKA ===");
 
         int playerWins = 0;
         int aiWins = 0;
@@ -140,20 +157,19 @@ public class GameService {
                 else if (s.startsWith("Döntetlen")) draws++;
                 else playerWins++;
             }
-            System.out.println(playername + " : " + playerWins + " győzelem");
-            System.out.println("AI : " + aiWins + " győzelem");
-            System.out.println("Döntetlen : " + draws);
+            log.info("{}: {} győzelem", playername, playerWins); //System.out.println(playername + " : " + playerWins + " győzelem");
+            log.info("AI: {} győzelem", aiWins); //System.out.println("AI : " + aiWins + " győzelem");
+            log.info("Döntetlen: {}", draws); //System.out.println("Döntetlen : " + draws);
 
         } catch (IOException e) {
-            System.out.println("Még nincs statisztika.");
+            log.warn("Még nincs statisztika");
+//            System.out.println("Még nincs statisztika.");
         }
 
-        System.out.println("====================");
+        log.info("====================");
+//        System.out.println("====================");
     }
     public String getPlayername() {
         return playername;
-    }
-    public void setPlayername(String playername) {
-        this.playername = playername;
     }
 }
