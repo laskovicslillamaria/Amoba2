@@ -105,8 +105,8 @@ public class App {
             board.kirajzol();
             service.nyertesKiiras(eredmeny, playername);
 
-            service.statMentes(eredmeny, playername);
-            service.statKiolvasas();
+//            service.statMentes(eredmeny, playername);
+//            service.statKiolvasas();
 
             }
         }
