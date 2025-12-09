@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 public class GameService {
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
     private String playername;
+    private final HighScoreDatabase db = new HighScoreDatabase();
     public GameService(String playername) {
         this.playername = playername;
         log.info("GameService létrehozva, játékos = {}", playername);
@@ -50,15 +51,19 @@ public class GameService {
 
     // Győztes kiírása
     public void nyertesKiiras(int eredmeny, String playername) {
-        if (eredmeny == 1)
+        if (eredmeny == 1) {
             log.info("{} (X) győzött!", playername);
+            db.addWin(playername);
 //            System.out.println(playername + " (X) győzött!");
-        else if (eredmeny == 2)
+        } else if (eredmeny == 2) {
             log.info("AI (O) győzött!");
+        db.addWin("AI");
 //            System.out.println("Az Ai (O) győzött!");
-        else
+        } else {
             log.info("Döntetlen!");
 //            System.out.println("Döntetlen!");
+        }
+        db.printHighScores();
     }
     public boolean jatekMenteseTxt(GameState state, String filename) {
         log.info("Játék mentése indul: {}", filename);
@@ -126,49 +131,57 @@ public class GameService {
             return null;
         }
     }
-
     public void statMentes(int eredmeny, String playername) {
-        try (FileWriter fw = new FileWriter("scores.txt", true)) {
-            if (eredmeny == 1) {
-                fw.write(playername + " nyert\n");
-            } else if (eredmeny == 2) {
-                fw.write("AI nyert\n");
-            } else {
-                fw.write("Döntetlen\n");
-            }
-        } catch (IOException e) {
-            log.error("Hiba statisztika mentésekor: {}", e.getMessage());
-//            System.out.println("Hiba a statisztika mentésekor!");
-        }
-    }
-    public void statKiolvasas() {
-        log.info("=== STATISZTIKA ===");
-//        System.out.println("=== STATISZTIKA ===");
-
-        int playerWins = 0;
-        int aiWins = 0;
-        int draws = 0;
-
-        try {
-        final  List<String> sorok = Files.readAllLines(Paths.get("scores.txt"));
-
-            for (String s : sorok) {
-                if (s.startsWith("AI")) aiWins++;
-                else if (s.startsWith("Döntetlen")) draws++;
-                else playerWins++;
-            }
-            log.info("{}: {} győzelem", playername, playerWins); //System.out.println(playername + " : " + playerWins + " győzelem");
-            log.info("AI: {} győzelem", aiWins); //System.out.println("AI : " + aiWins + " győzelem");
-            log.info("Döntetlen: {}", draws); //System.out.println("Döntetlen : " + draws);
-
-        } catch (IOException e) {
-            log.warn("Még nincs statisztika");
-//            System.out.println("Még nincs statisztika.");
+        if (eredmeny == 1) {
+            db.addWin(playername);
+        } else if (eredmeny == 2) {
+            db.addWin("AI");
         }
 
-        log.info("====================");
-//        System.out.println("====================");
+        db.printHighScores();
     }
+//    public void statMentes(int eredmeny, String playername) {
+//        try (FileWriter fw = new FileWriter("scores.txt", true)) {
+//            if (eredmeny == 1) {
+//                fw.write(playername + " nyert\n");
+//            } else if (eredmeny == 2) {
+//                fw.write("AI nyert\n");
+//            } else {
+//                fw.write("Döntetlen\n");
+//            }
+//        } catch (IOException e) {
+//            log.error("Hiba statisztika mentésekor: {}", e.getMessage());
+////            System.out.println("Hiba a statisztika mentésekor!");
+//        }
+//    }
+//    public void statKiolvasas() {
+//        log.info("=== STATISZTIKA ===");
+////        System.out.println("=== STATISZTIKA ===");
+//
+//        int playerWins = 0;
+//        int aiWins = 0;
+//        int draws = 0;
+//
+//        try {
+//        final  List<String> sorok = Files.readAllLines(Paths.get("scores.txt"));
+//
+//            for (String s : sorok) {
+//                if (s.startsWith("AI")) aiWins++;
+//                else if (s.startsWith("Döntetlen")) draws++;
+//                else playerWins++;
+//            }
+//            log.info("{}: {} győzelem", playername, playerWins); //System.out.println(playername + " : " + playerWins + " győzelem");
+//            log.info("AI: {} győzelem", aiWins); //System.out.println("AI : " + aiWins + " győzelem");
+//            log.info("Döntetlen: {}", draws); //System.out.println("Döntetlen : " + draws);
+//
+//        } catch (IOException e) {
+//            log.warn("Még nincs statisztika");
+////            System.out.println("Még nincs statisztika.");
+//        }
+//
+//        log.info("====================");
+////        System.out.println("====================");
+//    }
     public String getPlayername() {
         return playername;
     }
