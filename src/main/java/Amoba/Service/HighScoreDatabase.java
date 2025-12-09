@@ -17,7 +17,7 @@ public class HighScoreDatabase {
 
     private void load() {
         try {
-            File file = new File(FILE_NAME);
+           final File file = new File(FILE_NAME);
             if (!file.exists()) {
                 root = mapper.createObjectNode();
                 root.putObject("players");
@@ -40,9 +40,9 @@ public class HighScoreDatabase {
 
     /** Győzelem hozzáadása a játékoshoz */
     public void addWin(String playerName) {
-        ObjectNode players = (ObjectNode) root.get("players");
+       final ObjectNode players = (ObjectNode) root.get("players");
 
-        int jelenlegi = players.has(playerName) ? players.get(playerName).asInt() : 0;
+       final int jelenlegi = players.has(playerName) ? players.get(playerName).asInt() : 0;
         players.put(playerName, jelenlegi + 1);
 
         save();
@@ -50,7 +50,7 @@ public class HighScoreDatabase {
 
     /** High-score lista kiírása */
     public void printHighScores() {
-        ObjectNode players = (ObjectNode) root.get("players");
+       final ObjectNode players = (ObjectNode) root.get("players");
 
         System.out.println("===== HIGH SCORES =====");
         players.fields().forEachRemaining(entry ->
